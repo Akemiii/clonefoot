@@ -1,5 +1,6 @@
 using static EnumHelper;
 using static Clonefoot;
+using System;
 
 public class Player
 {
@@ -26,7 +27,7 @@ public class Player
     public float peak_region;
     public float contract;
     public float streak_prob;
-    public float streak_count;
+    public int streak_count;
 
     public bool participation;
 
@@ -43,7 +44,13 @@ public class Player
 
     public static bool QueryPlayerIsCpu(Player p)
     {
-        return false; // TODO::
+        return false; // TODO:: Ajustar aqui depois que criar a função TeamIsUser(Team t)
+    }
+
+    public static void PlayerStreakResetCount(Player p)
+    {
+        int randomValue = new Random().Next(PLAYER_STREAK_LOCK_LENGTH_LOWER, PLAYER_STREAK_LOCK_LENGTH_UPPER + 1);
+        p.streak_count = -randomValue;
     }
 
 
