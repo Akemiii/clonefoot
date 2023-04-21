@@ -1,5 +1,3 @@
-using System;
-
 public static class EnumHelper
 {
     public enum CounterType
@@ -167,17 +165,5 @@ public static class EnumHelper
         PLAYER_INFO_ATTRIBUTE_CAREER,
         PLAYER_INFO_ATTRIBUTE_OFFERS,
         PLAYER_INFO_ATTRIBUTE_END
-    }
-
-
-    public static class Counters
-    {
-        private static int[] counters = new int[Enum.GetValues(typeof(CounterType)).Length];
-
-        public static int GetNextID(CounterType counterType)
-        {
-            int counterIndex = (int)counterType;
-            return counters[counterIndex]++;
-        }
     }
 }

@@ -1,4 +1,4 @@
-public class Team 
+public class Team
 {
     public string name;
     public string symbol;
@@ -18,7 +18,7 @@ public class Team
     public Stadium stadium;
 
     public Player[] players;
-
+}
 public class Stadium
 {
     public string name;
