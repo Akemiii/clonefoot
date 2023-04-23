@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using static EnumHelper;
 
 public static class Clonefoot
@@ -19,6 +20,7 @@ public static class Clonefoot
     public const float PLAYER_AGE_UPPER = 36;
     public const float PLAYER_AVERAGE_TALENT_VARIANCE = 0.75f;
 
+    public const float PLAYER_BOOST_FITNESS_EFFECT = .8F;
     public const float PLAYER_BOOST_SKILL_EFFECT = 1.25f; 
 
     public const float PLAYER_CONTRACT_LOWER = 1F;
@@ -26,6 +28,14 @@ public static class Clonefoot
 
     public const float PLAYER_ETAL_SCOUT_FACTOR = 70;
 
+    public const float PLAYER_FITNESS_DECREASE_ADD = 12f;
+    public const float PLAYER_FITNESS_DECREASE_YOUNGER_FACTOR = 3f;
+    public const float PLAYER_FITNESS_DECREASE_OLDER_FACTOR = 7f;
+    public const float PLAYER_FITNESS_DECREASE_FACTOR_GOALIE = .5f;
+    public const float PLAYER_FITNESS_INCREASE_ADD = .15F;
+    public const float PLAYER_FITNESS_INCREASE_YOUNGER_FACTOR = -.0085F;
+    public const float PLAYER_FITNESS_INCREASE_OLDER_FACTOR = -.014f;
+    public const float PLAYER_FITNESS_INCREASE_VARIANCE = .25F;
     public const float PLAYER_FITNESS_EXPONENT = .25F;
     public const float PLAYER_FITNESS_LOWER = .85F;
     public const float PLAYER_FITNESS_UPPER = 1;
@@ -48,6 +58,8 @@ public static class Clonefoot
     public const float PLAYER_SKILL_UPDATE_YOUNGER_ADD = .00250f;
     public const float PLAYER_SKILL_UPDATE_OLDER_FACTOR = .00300F;
     public const float PLAYER_SKILL_UPDATE_OLDER_ADD = .00250F;
+    public const float PLAYER_STREAK_INFLUENCE_FITNESS_DECREASE = -.12F;
+    public const float PLAYER_STREAK_INFLUENCE_FITNESS_INCREASE = .12F;
     public const float PLAYER_STREAK_INFLUENCE_SKILL = .07F;
 
     public const float PLAYER_VALUE_SKILL_WEIGHT = .65f;
@@ -56,8 +68,29 @@ public static class Clonefoot
     public const float PLAYER_WAGE_VALUE_FACTOR = .01F;
     public const float PLAYER_WAGE_RANDOM_DEV = .15f;
 
+    public static int stat0 = (int)Status0Value.STATUS_NONE;
+    private static readonly Country country;
+
+    public static List<League> Ligs => country.leagues;
+    public static List<Cup> Cups => country.cups;
+    public static League League(int index) => country.leagues[index];
+    public static Cup Cup(int index) => country.Cups[index];
 
 }
+
+public class Country
+{
+    public string name;      // Name of the country.
+    public string symbol;    // Symbol of the country, eg a flag pixmap.
+    public string sid;       // Id of the country, eg 'england'.
+    public int rating;       // A rating point from 0-10 telling us how good the first league of the country is. Spain, for instance, has rating 10, whereas Ireland has only 5.
+
+    public List<League> leagues;   // Leagues array.
+    public List<Cup> cups;      // Cups array.
+    public List<object> allcups;// Pointer array holding all cups.
+
+}
+
 public static class Counters
 {
     private static int[] counters = new int[Enum.GetValues(typeof(CounterType)).Length];

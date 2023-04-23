@@ -20,5 +20,19 @@ public class Misc
         return 0;
     }
 
+    public static bool QueryIntegerIsInArray(int item, int[] array, int max)
+    {
+        for (int i = 0; i < max; i++)
+        {
+            if (item == array[i])
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
 
 }

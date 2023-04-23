@@ -388,7 +388,7 @@ public class Player
         return returnValue;
     }
 
-    public static int PlayerGamesGoalsGet(Player pl, int clid, int type)
+    public int PlayerGamesGoalsGet(Player pl, int clid, int type)
     {
         int returnValue = 0;
 
@@ -422,33 +422,75 @@ public class Player
         return returnValue;
     }
 
-    public static int PlayerCompareSubstituteFunc(IntPtr a, IntPtr b, IntPtr data)
+    void PlayerGamesGoalsSet(Player pl, int clid, int type, int value)
+    {
+        int games_goals_value = 0;
+        PlayerGamesGoals newPlayerGamesGoals = new PlayerGamesGoals();
+
+        for (int i = 0; i < pl.gamesGoals.Count; i++)
+        {
+            if (pl.gamesGoals[i].clid == clid)
+            {
+                if (type == (int)PlayerValue.PLAYER_VALUE_GAMES)
+                    games_goals_value = pl.gamesGoals[i].games + value;
+                else if (type == (int)PlayerValue.PLAYER_VALUE_GOALS)
+                    games_goals_value = pl.gamesGoals[i].goals + value;
+                else if (type == (int)PlayerValue.PLAYER_VALUE_SHOTS)
+                    games_goals_value = pl.gamesGoals[i].shots + value;
+
+                if (games_goals_value < 0)
+                {
+                    Console.WriteLine("player_games_goals_set: negative value; setting to 0\n");
+                    games_goals_value = 0;
+                }
+
+                if (type == (int)PlayerValue.PLAYER_VALUE_GAMES)
+                    pl.gamesGoals[i].games = games_goals_value;
+                else if (type == (int)PlayerValue.PLAYER_VALUE_GOALS)
+                    pl.gamesGoals[i].goals = games_goals_value;
+                else if (type == (int)PlayerValue.PLAYER_VALUE_SHOTS)
+                    pl.gamesGoals[i].shots = games_goals_value;
+
+                return;
+            }
+        }
+
+        newPlayerGamesGoals.clid = clid;
+        newPlayerGamesGoals.games = newPlayerGamesGoals.goals = newPlayerGamesGoals.shots = 0;
+
+        pl.gamesGoals.Add(newPlayerGamesGoals);
+
+        PlayerGamesGoalsSet(pl, clid, type, value);
+    }
+
+
+    public int PlayerCompareSubstituteFunc(IntPtr a, IntPtr b, IntPtr data)
     {
         var pl1 = Marshal.PtrToStructure<Player>(a);
         var pl2 = Marshal.PtrToStructure<Player>(b);
         int position = Marshal.ReadInt32(data);
-        float skill_for_pos1 = pl1.GetCSkill(position, false) *
+        float skill_for_pos1 = PlayerGetCskill(pl1, position, false) *
             (float)Math.Pow(pl1.fitness, PLAYER_FITNESS_EXPONENT);
-        float skill_for_pos2 = pl2.GetCSkill(position, false) *
+        float skill_for_pos2 = PlayerGetCskill(pl2, position, false) *
             (float)Math.Pow(pl2.fitness, PLAYER_FITNESS_EXPONENT);
-        float game_skill1 = pl1.GetGameSkill(false, true);
-        float game_skill2 = pl2.GetGameSkill(false, true);
-        bool good_structure1 = pl1.Team.Structure.SubstitutionGoodStructure(position, pl1.Pos);
-        bool good_structure2 = pl2.Team.Structure.SubstitutionGoodStructure(position, pl2.Pos);
+        float game_skill1 = PlayerGetGameSkill(pl1, false, true);
+        float game_skill2 = PlayerGetGameSkill(pl2, false, true);
+        bool good_structure1 = pl1.team.structure.SubstitutionGoodStructure(position, pl1.pos);//TODO:: Ajuste quando finalizar a classe team
+        bool good_structure2 = pl2.team.structure.SubstitutionGoodStructure(position, pl2.pos);//TODO:: Ajuste quando finalizar a classe team
 
-        if (pl1.Pos == position && pl2.Pos == position)
+        if (pl1.pos == position && pl2.pos == position)
         {
             return MiscFloatCompare(game_skill1, game_skill2);
         }
-        else if (pl1.Pos == position)
+        else if (pl1.pos == position)
         {
             return -1;
         }
-        else if (pl2.Pos == position)
+        else if (pl2.pos == position)
         {
             return 1;
         }
-        else if (position != Constants.PlayerPosGoalie)
+        else if (position != (int)PlayerPos.PLAYER_POS_GOALIE)
         {
             if (good_structure1 && good_structure2)
             {
@@ -473,6 +515,92 @@ public class Player
         }
     }
 
+    public bool PlayerSubstitutionGoodStructure(int oldStructure, int oldPos, int playerPos)
+    {
+        int[] acceptedStructures = { 532, 442, 352, 433, 343 };
+        int newPos = oldStructure - (int)Math.Round(Math.Pow(10, (int)PlayerPos.PLAYER_POS_FORWARD - oldPos)) + (int)Math.Round(Math.Pow(10, (int)PlayerPos.PLAYER_POS_FORWARD - playerPos));
+
+        return QueryIntegerIsInArray(newPos, acceptedStructures, 5);
+    }
+
+    public void PlayerCopy(Player pl, Team tm, int insert_at)
+    {
+        Player newPlayer = pl;
+
+        newPlayer.team = tm;
+
+        tm.players.Insert(insert_at, newPlayer);
+
+        if (insert_at < 11)
+        {
+            PlayerOfIdxTeam(tm, insert_at).curPos = GetPositionFromStructure(tm.structure, insert_at);
+        }
+        else
+        {
+            PlayerOfIdxTeam(tm, insert_at).curPos = PlayerOfIdxTeam(tm, insert_at).pos;
+        }
+
+        PlayerOfIdxTeam(tm, insert_at).cskill = PlayerGetCskill(
+            PlayerOfIdxTeam(tm, insert_at),
+            PlayerOfIdxTeam(tm, insert_at).curPos,
+            true
+        );
+    }
+
+    public void PlayerMove(Team tm1, int player_number, Team tm2, int insert_at)
+    {
+        Player pl = PlayerOfIdxTeam(tm1, player_number);
+
+        pl.team = tm2;
+
+        tm1.players.RemoveAt(player_number);
+
+        tm2.players.Insert(insert_at, pl);
+    }
+
+    public void PlayerSwap(Team tm1, int playerNumber1, Team tm2, int playerNumber2)
+    {
+        int move = (tm1 == tm2 && playerNumber1 < playerNumber2) ? -1 : 1;
+
+        if (stat0 == (int)Status0Value.STATUS_LIVE_GAME_PAUSE)
+        {
+            if ((playerNumber1 < 11 && PlayerIsBanned(PlayerOfIdxTeam(tm1, playerNumber1)) > 0 &&
+                PlayerOfIdxTeam(tm1, playerNumber1).participation) ||
+               (playerNumber2 < 11 && PlayerIsBanned(PlayerOfIdxTeam(tm2, playerNumber2)) > 0 &&
+                PlayerOfIdxTeam(tm2, playerNumber2).participation))
+            {
+                Debug.LogWarning("You can't replace a banned player.");
+                return;
+            }
+        }
+
+        PlayerMove(tm1, playerNumber1, tm2, playerNumber2);
+
+        if (playerNumber2 < 11)
+        {
+            PlayerOfIdxTeam(tm2, playerNumber2).curPos = GetPositionFromStructure(tm2.structure, playerNumber2);
+        }
+        else
+        {
+            PlayerOfIdxTeam(tm2, playerNumber2).curPos = PlayerOfIdxTeam(tm2, playerNumber2).pos;
+        }
+
+        PlayerOfIdxTeam(tm2, playerNumber2).cskill = PlayerGetCskill(PlayerOfIdxTeam(tm2, playerNumber2), PlayerOfIdxTeam(tm2, playerNumber2).curPos, true);
+
+        PlayerMove(tm2, playerNumber2 + move, tm1, playerNumber1);
+
+        if(playerNumber1 < 11)
+        {
+            PlayerOfIdxTeam(tm1, playerNumber1).curPos = GetPositionFromStructure(tm1.structure, playerNumber1);
+        }
+        else
+        {
+            PlayerOfIdxTeam(tm1, playerNumber1).curPos = PlayerOfIdxTeam(tm1, playerNumber1).pos;
+        }
+
+        PlayerOfIdxTeam(tm1, playerNumber1).cskill = PlayerGetCskill(PlayerOfIdxTeam(tm1, playerNumber1), PlayerOfIdxTeam(tm1, playerNumber1).curPos, true);
+    }
+
     public float PlayerGetCskill(Player pl, int position, bool check_health)
     {
         float cskill_factor;
@@ -484,8 +612,8 @@ public class Player
 
         if (pl.pos != position)
         {
-            if (position == PLAYER_POS_GOALIE ||
-               pl.pos == PLAYER_POS_GOALIE)
+            if (position == (int)PlayerPos.PLAYER_POS_GOALIE ||
+               pl.pos == (int)PlayerPos.PLAYER_POS_GOALIE)
                 cskill_factor = 0.5f;
             else if (Math.Abs(position - pl.pos) == 2)
                 cskill_factor = 0.65f;
@@ -498,21 +626,21 @@ public class Player
             return pl.skill;
     }
 
-    public static int PlayerIsBanned(Player pl)
+    public int PlayerIsBanned(Player pl)
     {
-        Fixture fix = Team.GetFixture(pl.team, false);
+        Fixture fix = Team.GetFixture(pl.team, false); //TODO:: Ajustar aqui após criar a classe fixture
         int yellowRed = -1, yellow, red;
 
         if (fix == null)
             return 0;
 
         if (fix.clid < ID_CUP_START)
-            yellowRed = LeagueFromClid(fix.clid).yellow_red;
+            yellowRed = LeagueFromClid(fix.clid).yellow_red; //TODO:: Ajustar aqui após criar a classe league
         else
-            yellowRed = CupFromClid(fix.clid).yellow_red;
+            yellowRed = CupFromClid(fix.clid).yellow_red; //TODO:: Ajustar aqui após criar a classe Cup
 
-        yellow = PlayerGetCard(pl, fix.clid, (int)PlayerValue.PLAYER_VALUE_CARD_YELLOW);
-        red = PlayerGetCard(pl, fix.clid, (int)PlayerValue.PLAYER_VALUE_CARD_RED);
+        yellow = PlayerCardGet(pl, fix.clid, (int)PlayerValue.PLAYER_VALUE_CARD_YELLOW);
+        red = PlayerCardGet(pl, fix.clid, (int)PlayerValue.PLAYER_VALUE_CARD_RED);
 
         if (red > 0)
             return red;
@@ -523,7 +651,7 @@ public class Player
         return 0;
     }
 
-    public static int PlayerGetCard(Player pl, int clid, int card_type)
+    public int PlayerCardGet(Player pl, int clid, int card_type)
     {
         int return_value = 0;
 
@@ -543,19 +671,122 @@ public class Player
         return return_value;
     }
 
-
-    float PlayerGetGameSkill(Player pl, bool skill, bool count_special)
+    void PlayerCardSet(Player pl, int clid, int card_type, int value, bool diff)
     {
-        float boost = (count_special) ?
+        int i;
+        int? card_value = null;
+        PlayerCard newCard = new PlayerCard();
+
+        for (i = 0; i < pl.cards.Count; i++)
+        {
+            if (pl.cards[i].clid == clid)
+            {
+                if (card_type == (int)PlayerValue.PLAYER_VALUE_CARD_YELLOW)
+                    card_value = pl.cards[i].yellow;
+                else if (card_type == (int)PlayerValue.PLAYER_VALUE_CARD_RED)
+                    card_value = pl.cards[i].red;
+
+                if (diff)
+                    card_value += value;
+                else
+                    card_value = value;
+
+                if (card_value < 0)
+                {
+                    Debug.LogWarning("PlayerCardSet: negative card value; setting to 0");
+                    card_value = 0;
+                }
+
+                if (card_type == (int)PlayerValue.PLAYER_VALUE_CARD_YELLOW)
+                    pl.cards[i].yellow = card_value.Value;
+                else if (card_type == (int)PlayerValue.PLAYER_VALUE_CARD_RED)
+                    pl.cards[i].red = card_value.Value;
+
+                return;
+            }
+        }
+
+        newCard.clid = clid;
+        newCard.yellow = newCard.red = 0;
+        pl.cards.Add(newCard);
+
+        PlayerCardSet(pl, clid, card_type, value, diff);
+    }
+
+
+
+    public float PlayerGetGameSkill(Player pl, bool skill, bool count_special)
+    {
+        float boost = count_special ?
             1 + PLAYER_BOOST_SKILL_EFFECT * pl.team.boost : 1;
-        float streak = (count_special) ?
-            1 + (float)pl.streak * PLAYER_STREAK_INFLUENCE_SKILL : 1;
+        float streak = count_special ?
+            1 + pl.streak * PLAYER_STREAK_INFLUENCE_SKILL : 1;
 
         return (skill) ? pl.skill * boost * streak *
             (float)Math.Pow(pl.fitness, PLAYER_FITNESS_EXPONENT) :
             pl.cskill * boost * streak *
             (float)Math.Pow(pl.fitness, PLAYER_FITNESS_EXPONENT);
     }
+    void PlayerDecreseFitness(Player pl)
+    {
+        float goalie_factor = 1 - PLAYER_FITNESS_DECREASE_FACTOR_GOALIE * (pl.curPos == 0 ? 1 : 0);
+        float boost_factor = 1 + pl.team.boost * PLAYER_BOOST_FITNESS_EFFECT;
+        float streak_factor = 1 + pl.streak * PLAYER_STREAK_INFLUENCE_FITNESS_DECREASE;
+
+        if (pl.age < pl.peakAge - pl.peakRegion)
+        {
+            pl.fitness -= ((pl.peakAge - pl.peakRegion - pl.age) *
+                   PLAYER_FITNESS_DECREASE_YOUNGER_FACTOR +
+                    PLAYER_FITNESS_DECREASE_ADD) *
+                goalie_factor * boost_factor * streak_factor;
+        }
+        else if (pl.age > pl.peakAge + pl.peakRegion)
+        {
+            pl.fitness -= ((pl.age - pl.peakAge - pl.peakRegion) *
+                    PLAYER_FITNESS_DECREASE_OLDER_FACTOR +
+                    PLAYER_FITNESS_DECREASE_ADD) *
+                goalie_factor * boost_factor * streak_factor;
+        }
+        else
+        {
+            pl.fitness -= PLAYER_FITNESS_DECREASE_ADD *
+                goalie_factor * boost_factor * streak_factor;
+        }
+
+        pl.fitness = Math.Max(0, pl.fitness);
+    }
+
+    void PlayerUpdateFitness(Player pl)
+    {
+        float variance = Rnd(
+        1 - PLAYER_FITNESS_INCREASE_VARIANCE,
+        1 + PLAYER_FITNESS_INCREASE_VARIANCE);
+        float streak_factor =
+        1 + (pl.streak * PLAYER_STREAK_INFLUENCE_FITNESS_INCREASE);
+        if (pl.participation)
+        {
+            pl.participation = false;
+            return;
+        }
+
+        if (pl.age < pl.peakAge - pl.peakRegion)
+            pl.fitness += ((pl.peakAge - pl.peakRegion - pl.age) *
+                             PLAYER_FITNESS_INCREASE_YOUNGER_FACTOR +
+                             PLAYER_FITNESS_INCREASE_ADD) *
+                            variance * streak_factor;
+        else if (pl.age > pl.peakAge + pl.peakRegion)
+            pl.fitness += ((pl.age - pl.peakAge - pl.peakRegion) *
+                             PLAYER_FITNESS_INCREASE_OLDER_FACTOR +
+                             PLAYER_FITNESS_INCREASE_ADD) *
+                            variance * streak_factor;
+        else
+            pl.fitness += PLAYER_FITNESS_INCREASE_ADD *
+                           variance * streak_factor;
+
+        pl.fitness = Math.Min(pl.fitness, 1);
+
+    }
+
 
     private float Rnd(float min, float max)
     {
