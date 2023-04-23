@@ -121,6 +121,14 @@ public static class EnumHelper
         PLAYER_VALUE_END
     }
 
+    public enum PlayerCompareAttrib
+    {
+        PLAYER_COMPARE_ATTRIBUTE_GAME_SKILL = 0,
+        PLAYER_COMPARE_ATTRIBUTE_POS,
+        PLAYER_COMPARE_ATTRIBUTE_LEAGUE_GOALS,
+        PLAYER_COMPARE_ATTRIBUTE_END
+    }
+
     public enum PlayerListAttributeValue
     {
         PLAYER_LIST_ATTRIBUTE_NAME = 0,

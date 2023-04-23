@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 public class Team
 {
     public string name;
@@ -17,7 +19,7 @@ public class Team
 
     public Stadium stadium;
 
-    public Player[] players;
+    public List<Player> players;
 }
 public class Stadium
 {

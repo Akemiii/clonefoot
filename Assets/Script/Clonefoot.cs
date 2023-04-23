@@ -8,28 +8,54 @@ public static class Clonefoot
 
     public const int ID_LEAGUE_START = 1000;
     public const int ID_CUP_START = 7000;
+
     public const int PLAYER_STREAK_LOCK_LENGTH_LOWER = 3;
     public const int PLAYER_STREAK_LOCK_LENGTH_UPPER = 6;
+
     public const int TEAM_CPU_PLAYERS = 20;
 
 
     public const float PLAYER_AGE_LOWER = 18;
     public const float PLAYER_AGE_UPPER = 36;
     public const float PLAYER_AVERAGE_TALENT_VARIANCE = 0.75f;
-    public const float PLAYER_POS_BOUND1 = .37550f;
-    public const float PLAYER_POS_BOUND2 = .75100f;
+
+    public const float PLAYER_BOOST_SKILL_EFFECT = 1.25f; 
+
+    public const float PLAYER_CONTRACT_LOWER = 1F;
+    public const float PLAYER_CONTRACT_UPPER = 4F;
+
+    public const float PLAYER_ETAL_SCOUT_FACTOR = 70;
+
+    public const float PLAYER_FITNESS_EXPONENT = .25F;
+    public const float PLAYER_FITNESS_LOWER = .85F;
+    public const float PLAYER_FITNESS_UPPER = 1;
+
+    public const float PLAYER_LSU_UPDATE_LIMIT = 15;
+    public const float PLAYER_LSU_LOWER = 2f;
+    public const float PLAYER_LSU_UPPER = 10f;
+
+    public const float PLAYER_MAX_SKILL = 99;
+
     public const float PLAYER_PEAK_AGE_GOALIE_ADDITION = 2;
     public const float PLAYER_PEAK_AGE_LOWER = 29;
     public const float PLAYER_PEAK_AGE_UPPER = 32;
     public const float PLAYER_PEAK_REGION_LOWER = 1.5F;
     public const float PLAYER_PEAK_REGION_UPPER = 4;
-    public const float PLAYER_MAX_SKILL = 99;
-    public const float PLAYER_LSU_UPDATE_LIMIT = 15;
+    public const float PLAYER_POS_BOUND1 = .37550f;
+    public const float PLAYER_POS_BOUND2 = .75100f;
+
     public const float PLAYER_SKILL_UPDATE_YOUNGER_FACTOR = .00250f;
     public const float PLAYER_SKILL_UPDATE_YOUNGER_ADD = .00250f;
     public const float PLAYER_SKILL_UPDATE_OLDER_FACTOR = .00300F;
     public const float PLAYER_SKILL_UPDATE_OLDER_ADD = .00250F;
-    public const float PLAYER_ETAL_SCOUT_FACTOR = 70;
+    public const float PLAYER_STREAK_INFLUENCE_SKILL = .07F;
+
+    public const float PLAYER_VALUE_SKILL_WEIGHT = .65f;
+    public const float PLAYER_VALUE_POWER = 3.5f;
+
+    public const float PLAYER_WAGE_VALUE_FACTOR = .01F;
+    public const float PLAYER_WAGE_RANDOM_DEV = .15f;
+
 
 }
 public static class Counters

@@ -61,6 +61,9 @@
     <Compile Include="Assets\Script\Clonefoot.cs" />
     <Compile Include="Assets\Script\Team.cs" />
     <Compile Include="Assets\Script\Player.cs" />
+    <Compile Include="Assets\Script\Option.cs" />
+    <Compile Include="Assets\Script\Variables.cs" />
+    <Compile Include="Assets\Script\Misc.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
