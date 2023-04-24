@@ -68,6 +68,7 @@
     <Compile Include="Assets\Script\Table.cs" />
     <Compile Include="Assets\Script\Cup.cs" />
     <Compile Include="Assets\Script\League.cs" />
+    <Compile Include="Assets\Script\LiveGame.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

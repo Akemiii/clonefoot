@@ -73,8 +73,12 @@ public static class Clonefoot
 
     public static List<League> Ligs => country.leagues;
     public static List<Cup> Cups => country.cups;
+    public static List<object> AllCups => country.allcups;
+
     public static League League(int index) => country.leagues[index];
-    public static Cup Cup(int index) => country.Cups[index];
+    public static Cup Cup(int index) => country.cups[index];
+    public static object AllCup(int index) => country.allcups[index];
+
 
 }
 

@@ -114,9 +114,9 @@ public class Table
             }
         }
 
-        for (int i = 0; i < cps.Length; i++)
+        for (int i = 0; i < Cups.Count; i++)
         {
-            if (CupHasTables(cps[i].id) != -1)
+            if (CupHasTables(Cups[i].id) != -1)
             {
                 return true;
             }

@@ -253,4 +253,107 @@ public static class EnumHelper
         STATUS_SPLASH,
         STATUS_END
     }
+
+
+    /** 
+     * Live Game
+     * **/
+    public enum LiveGameEventType
+    {
+        /** This is the 'main' event, nothing in
+        particular is happening; one of the teams
+        is in possession of the ball. */
+        LIVE_GAME_EVENT_GENERAL = 0, /* 0 */
+        LIVE_GAME_EVENT_START_MATCH, /* 1 */
+        LIVE_GAME_EVENT_HALF_TIME, /* 2 */
+        LIVE_GAME_EVENT_EXTRA_TIME, /* 3 */
+        LIVE_GAME_EVENT_END_MATCH, /* 4 */
+        LIVE_GAME_EVENT_LOST_POSSESSION, /* 5 */
+        LIVE_GAME_EVENT_SCORING_CHANCE, /* 6 */
+        LIVE_GAME_EVENT_HEADER, /* 7 */
+        LIVE_GAME_EVENT_PENALTY, /* 8 */
+        LIVE_GAME_EVENT_FREE_KICK, /* 9 */
+        LIVE_GAME_EVENT_GOAL, /* 10 */
+        LIVE_GAME_EVENT_OWN_GOAL, /* 11 */
+        LIVE_GAME_EVENT_POST, /* 12 */
+        LIVE_GAME_EVENT_MISS, /* 13 */
+        LIVE_GAME_EVENT_SAVE, /* 14 */
+        LIVE_GAME_EVENT_CROSS_BAR, /* 15 */
+        LIVE_GAME_EVENT_FOUL, /* 16 */
+        LIVE_GAME_EVENT_FOUL_YELLOW, /* 17 */
+        LIVE_GAME_EVENT_FOUL_RED, /* 18 */
+        LIVE_GAME_EVENT_FOUL_RED_INJURY, /* 19 */
+        LIVE_GAME_EVENT_SEND_OFF, /* 20 */
+        LIVE_GAME_EVENT_INJURY, /* 21 */
+        /** An injury that permits the player to
+        continue after some brief time. */
+        LIVE_GAME_EVENT_TEMP_INJURY, /* 22 */
+        LIVE_GAME_EVENT_PENALTIES, /* 23 */
+        LIVE_GAME_EVENT_STADIUM, /* 24 */
+        LIVE_GAME_EVENT_STADIUM_BREAKDOWN, /* 25 */
+        LIVE_GAME_EVENT_STADIUM_RIOTS, /* 26 */
+        LIVE_GAME_EVENT_STADIUM_FIRE, /* 27 */
+        LIVE_GAME_EVENT_SUBSTITUTION, /* 28 */
+        LIVE_GAME_EVENT_STRUCTURE_CHANGE, /* 29 */
+        LIVE_GAME_EVENT_STYLE_CHANGE_ALL_OUT_DEFEND, /* 30 */
+        LIVE_GAME_EVENT_STYLE_CHANGE_DEFEND, /* 31 */
+        LIVE_GAME_EVENT_STYLE_CHANGE_BALANCED, /* 32 */
+        LIVE_GAME_EVENT_STYLE_CHANGE_ATTACK, /* 33 */
+        LIVE_GAME_EVENT_STYLE_CHANGE_ALL_OUT_ATTACK, /* 34 */
+        LIVE_GAME_EVENT_BOOST_CHANGE_ANTI, /* 35 */
+        LIVE_GAME_EVENT_BOOST_CHANGE_OFF, /* 36 */
+        LIVE_GAME_EVENT_BOOST_CHANGE_ON, /* 37 */
+        LIVE_GAME_EVENT_END
+    }
+
+    public enum LiveGameUnitArea
+    {
+        LIVE_GAME_UNIT_AREA_DEFEND = 0,
+        LIVE_GAME_UNIT_AREA_MIDFIELD,
+        LIVE_GAME_UNIT_AREA_ATTACK,
+        LIVE_GAME_UNIT_AREA_END
+    }
+
+    public enum LiveGameUnitTime
+    {
+        LIVE_GAME_UNIT_TIME_FIRST_HALF = 0,
+        LIVE_GAME_UNIT_TIME_SECOND_HALF,
+        LIVE_GAME_UNIT_TIME_EXTRA_TIME,
+        LIVE_GAME_UNIT_TIME_PENALTIES,
+        LIVE_GAME_UNIT_TIME_END
+    }
+
+    public enum LiveGameStatValue
+    {
+        LIVE_GAME_STAT_VALUE_GOALS_REGULAR = 0,
+        LIVE_GAME_STAT_VALUE_SHOTS,
+        LIVE_GAME_STAT_VALUE_SHOT_PERCENTAGE,
+        LIVE_GAME_STAT_VALUE_POSSESSION,
+        LIVE_GAME_STAT_VALUE_PENALTIES,
+        LIVE_GAME_STAT_VALUE_FOULS,
+        LIVE_GAME_STAT_VALUE_CARDS,
+        LIVE_GAME_STAT_VALUE_REDS,
+        LIVE_GAME_STAT_VALUE_INJURIES,
+        LIVE_GAME_STAT_VALUE_END
+    }
+
+    public enum LiveGameStatArray
+    {
+        LIVE_GAME_STAT_ARRAY_SCORERS = 0,
+        LIVE_GAME_STAT_ARRAY_YELLOWS,
+        LIVE_GAME_STAT_ARRAY_REDS,
+        LIVE_GAME_STAT_ARRAY_INJURED,
+        LIVE_GAME_STAT_ARRAY_END
+    }
+
+    public enum GameTeamValue
+    {
+        GAME_TEAM_VALUE_GOALIE = 0,
+        GAME_TEAM_VALUE_DEFEND,
+        GAME_TEAM_VALUE_MIDFIELD,
+        GAME_TEAM_VALUE_ATTACK,
+        GAME_TEAM_VALUE_END
+    }
+
+
 }
