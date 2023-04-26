@@ -56,19 +56,22 @@
     <Analyzer Include="E:\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Script\Math.cs" />
-    <Compile Include="Assets\Script\EnumHelper.cs" />
-    <Compile Include="Assets\Script\Clonefoot.cs" />
-    <Compile Include="Assets\Script\Team.cs" />
-    <Compile Include="Assets\Script\Player.cs" />
-    <Compile Include="Assets\Script\Option.cs" />
+    <Compile Include="Assets\Script\Cup.cs" />
     <Compile Include="Assets\Script\Variables.cs" />
     <Compile Include="Assets\Script\Misc.cs" />
-    <Compile Include="Assets\Script\Fixture.cs" />
-    <Compile Include="Assets\Script\Table.cs" />
-    <Compile Include="Assets\Script\Cup.cs" />
     <Compile Include="Assets\Script\League.cs" />
+    <Compile Include="Assets\Script\Math.cs" />
+    <Compile Include="Assets\Script\User.cs" />
+    <Compile Include="Assets\Script\Option.cs" />
+    <Compile Include="Assets\Script\EnumHelper.cs" />
+    <Compile Include="Assets\Script\Clonefoot.cs" />
+    <Compile Include="Assets\Script\Bet.cs" />
+    <Compile Include="Assets\Script\Team.cs" />
+    <Compile Include="Assets\Script\Table.cs" />
+    <Compile Include="Assets\Script\Fixture.cs" />
     <Compile Include="Assets\Script\LiveGame.cs" />
+    <Compile Include="Assets\Script\Player.cs" />
+    <Compile Include="Assets\Script\YouthAcademy.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

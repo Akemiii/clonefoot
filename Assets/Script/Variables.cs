@@ -1,10 +1,20 @@
-public class Variables 
+using System.Collections.Generic;
+using static EnumHelper;
+public static class Variables 
 {
-    public int season;
-    public int week;
-    public int weekRound;
+    public static int season;
+    public static int week;
+    public static int weekRound;
 
-    public OptionList constantsApp;
-    public OptionList constants;
-    public OptionList options;
+    public static int curUser;
+
+    public static object statp;
+
+    public static List<User> users;
+
+    public static LiveGame liveGameTemp;
+
+    public static OptionList constantsApp;
+    public static OptionList constants;
+    public static OptionList options;
 }

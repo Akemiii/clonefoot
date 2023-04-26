@@ -30,7 +30,7 @@ public class Table
         element.teamId = team.id;
         element.oldRank = oldRank;
 
-        for (int i = 0; i < (int)TableElementValues.TABLE_END; i++)
+        for (int i = 0; i < (int)TableElementValues.EN; i++)
         {
             element.values[i] = 0;
         }
@@ -47,25 +47,25 @@ public class Table
 
         for (int i = 0; i < 2; i++)
         {
-            elements[i].values[(int)TableElementValues.TABLE_PLAYED]++;
-            elements[i].values[(int)TableElementValues.TABLE_GF] += fix.result[i, 0];
-            elements[i].values[(int)TableElementValues.TABLE_GA] += fix.result[i == 0 ? 1 : 0, 0];
-            elements[i].values[(int)TableElementValues.TABLE_GD] = elements[i].values[(int)TableElementValues.TABLE_GF] - elements[i].values[(int)TableElementValues.TABLE_GA];
+            elements[i].values[(int)TableElementValues.PLAYED]++;
+            elements[i].values[(int)TableElementValues.GF] += fix.result[i, 0];
+            elements[i].values[(int)TableElementValues.GA] += fix.result[i == 0 ? 1 : 0, 0];
+            elements[i].values[(int)TableElementValues.GD] = elements[i].values[(int)TableElementValues.GF] - elements[i].values[(int)TableElementValues.GA];
         }
 
         if (fix.result[0, 0] == fix.result[1, 0])
         {
             for (int i = 0; i < 2; i++)
             {
-                elements[i].values[(int)TableElementValues.TABLE_DRAW]++;
-                elements[i].values[(int)TableElementValues.TABLE_PTS] += 1;
+                elements[i].values[(int)TableElementValues.DRAW]++;
+                elements[i].values[(int)TableElementValues.PTS] += 1;
             }
         }
         else
         {
-            elements[idx].values[(int)TableElementValues.TABLE_WON]++;
-            elements[idx].values[(int)TableElementValues.TABLE_PTS] += 3;
-            elements[1 - idx].values[(int)TableElementValues.TABLE_LOST]++;
+            elements[idx].values[(int)TableElementValues.WON]++;
+            elements[idx].values[(int)TableElementValues.PTS] += 3;
+            elements[1 - idx].values[(int)TableElementValues.LOST]++;
         }
     }
 
@@ -133,6 +133,6 @@ public class TableElement
     public Team team;
     public int teamId;
     public int oldRank;
-    public int[] values = new int[(int)TableElementValues.TABLE_END];
+    public int[] values = new int[(int)TableElementValues.EN];
 
 }

@@ -43,7 +43,7 @@ public class Player
     public List<PlayerCard> cards;
     public Team team;
 
-    public int[] career = new int[(int)PlayerValue.PLAYER_VALUE_END];
+    public int[] career = new int[(int)PlayerValue.END];
 
     public static bool QueryPlayerIsYouth(Player p)
     {
@@ -68,13 +68,13 @@ public class Player
         Player p = new Player();
 
         name = (newId) ? team.names_file : null;
-        id = (newId) ? GetNextID(CounterType.COUNT_PLAYER_ID) : -1;
+        id = (newId) ? GetNextID(CounterType.PLAYER_ID) : -1;
         pos = GetPositionFromStructure(team.structure, team.players.Count);
         curPos = pos;
         age = (float)MathGaussDist(PLAYER_AGE_LOWER, PLAYER_AGE_UPPER);
         peakAge = Rnd(PLAYER_PEAK_AGE_LOWER +
-                    (pos == (int)PlayerPos.PLAYER_POS_GOALIE ? PLAYER_PEAK_AGE_GOALIE_ADDITION : 0), PLAYER_PEAK_AGE_UPPER +
-                    (pos == (int)PlayerPos.PLAYER_POS_GOALIE ? PLAYER_PEAK_AGE_GOALIE_ADDITION : 0));
+                    (pos == (int)PlayerPos.GOALIE ? PLAYER_PEAK_AGE_GOALIE_ADDITION : 0), PLAYER_PEAK_AGE_UPPER +
+                    (pos == (int)PlayerPos.GOALIE ? PLAYER_PEAK_AGE_GOALIE_ADDITION : 0));
         peakRegion = (float)MathGaussDist(PLAYER_PEAK_REGION_LOWER, PLAYER_PEAK_REGION_UPPER);
         talent = Mathf.Clamp(avarageTalent * skillFactor, 0, PLAYER_MAX_SKILL);
         skill = PlayerSkillFromTalent(p);
@@ -89,13 +89,13 @@ public class Player
         cards = new List<PlayerCard>();
         gamesGoals = new List<PlayerGamesGoals>();
 
-        for (int i = 0; i < (int)PlayerValue.PLAYER_VALUE_END; i++)
+        for (int i = 0; i < (int)PlayerValue.END; i++)
             career[i] = 0;
 
         team = t;
         participation = false;
         offers = 0;
-        streak = (int)PlayerStreak.PLAYER_STREAK_NONE;
+        streak = (int)PlayerStreak.NONE;
         streakCount = 0;
         streakProb = 0;
 
@@ -107,14 +107,14 @@ public class Player
 
     }
 
-    void PlayerEstimateTalent(Player pl)
+    public void PlayerEstimateTalent(Player pl)
     {
-        float[] scountDeviance = new float[(int)QualityType.QUALITY_END];
+        float[] scountDeviance = new float[(int)QualityType.END];
 
         float[] devianceBound = new float[2]
             {pl.talent - pl.skill, PLAYER_MAX_SKILL - pl.talent};
 
-        for (int i = 0; i < (int)QualityType.QUALITY_END; i++)
+        for (int i = 0; i < (int)QualityType.END; i++)
         {
             scountDeviance[i] = (i + 1) *PLAYER_MAX_SKILL *
                 (PLAYER_ETAL_SCOUT_FACTOR / 100);
@@ -212,14 +212,14 @@ public class Player
 
         if (playerNumber == 0 || playerNumber == 11)
         {
-            position = (int)PlayerPos.PLAYER_POS_GOALIE;
+            position = (int)PlayerPos.GOALIE;
         }
         else if (playerNumber < bound[0] ||
                 (playerNumber > 10 &&
                 playerNumber < (11 + (TEAM_CPU_PLAYERS - 11) *
                 PLAYER_POS_BOUND1)))
         {
-            position = (int)PlayerPos.PLAYER_POS_DEFENDER;
+            position = (int)PlayerPos.DEFENDER;
         }
         else if (playerNumber < bound[1] || 
                 (playerNumber > 10 &&
@@ -227,11 +227,11 @@ public class Player
                 PLAYER_POS_BOUND2)))
         {
 
-            position = (int)PlayerPos.PLAYER_POS_MIDFIELDER;
+            position = (int)PlayerPos.MIDFIELDER;
         }
         else
         {
-            position = (int)PlayerPos.PLAYER_POS_FORWARD;
+            position = (int)PlayerPos.FORWARD;
         }
 
             return position;
@@ -265,7 +265,7 @@ public class Player
         return tm.players[number];
     }
 
-    public Player PlayerOfIdTeam(Team tm, int id)
+    public static Player PlayerOfIdTeam(Team tm, int id)
     {
         for (int i = 0; i < tm.players.Count; i++)
         {
@@ -301,15 +301,15 @@ public class Player
 
         for (int i = 0; i < pl.gamesGoals.Count; i++)
         {
-            if (type == (int)PlayerValue.PLAYER_VALUE_GOALS)
+            if (type == (int)PlayerValue.GOALS)
             {
                 sum += pl.gamesGoals[i].goals;
             }
-            else if (type == (int)PlayerValue.PLAYER_VALUE_GAMES)
+            else if (type == (int)PlayerValue.GAMES)
             {
                 sum += pl.gamesGoals[i].games;
             }
-            else if (type == (int)PlayerValue.PLAYER_VALUE_SHOTS)
+            else if (type == (int)PlayerValue.SHOTS)
             {
                 sum += pl.gamesGoals[i].shots;
             }
@@ -336,11 +336,11 @@ public class Player
 
         int type = (int)data;
 
-        if(type == (int)PlayerCompareAttrib.PLAYER_COMPARE_ATTRIBUTE_GAME_SKILL)
+        if(type == (int)PlayerCompareAttrib.GAME_SKILL)
         {
             returnValue = MiscFloatCompare(PlayerGetGameSkill(a, false, true), PlayerGetGameSkill(b, false, true));
         }
-        else if (type == (int)PlayerCompareAttrib.PLAYER_COMPARE_ATTRIBUTE_POS)
+        else if (type == (int)PlayerCompareAttrib.POS)
         {
             if (Math.Min(PlayerIdIndex(a.team, a.id), PlayerIdIndex(b.team, b.id)) < 11 &&
              Math.Max(PlayerIdIndex(a.team, a.id), PlayerIdIndex(b.team, b.id)) >= 11)
@@ -364,14 +364,14 @@ public class Player
                 returnValue = 0;
             }   
         }
-        else if(type == (int)PlayerCompareAttrib.PLAYER_COMPARE_ATTRIBUTE_LEAGUE_GOALS)
+        else if(type == (int)PlayerCompareAttrib.LEAGUE_GOLS)
         {
-            int goals1 = PlayerGamesGoalsGet(a, a.team.clid, (int)PlayerValue.PLAYER_VALUE_GOALS);
-            int games1 = PlayerGamesGoalsGet(a, a.team.clid, (int)PlayerValue.PLAYER_VALUE_GAMES);
-            int shots1 = PlayerGamesGoalsGet(a, a.team.clid, (int)PlayerValue.PLAYER_VALUE_SHOTS);
-            int goals2 = PlayerGamesGoalsGet(b, b.team.clid, (int)PlayerValue.PLAYER_VALUE_GOALS);
-            int games2 = PlayerGamesGoalsGet(b, b.team.clid, (int)PlayerValue.PLAYER_VALUE_GAMES);
-            int shots2 = PlayerGamesGoalsGet(b, b.team.clid, (int)PlayerValue.PLAYER_VALUE_SHOTS);
+            int goals1 = PlayerGamesGoalsGet(a, a.team.clid, (int)PlayerValue.GOALS);
+            int games1 = PlayerGamesGoalsGet(a, a.team.clid, (int)PlayerValue.GAMES);
+            int shots1 = PlayerGamesGoalsGet(a, a.team.clid, (int)PlayerValue.SHOTS);
+            int goals2 = PlayerGamesGoalsGet(b, b.team.clid, (int)PlayerValue.GOALS);
+            int games2 = PlayerGamesGoalsGet(b, b.team.clid, (int)PlayerValue.GAMES);
+            int shots2 = PlayerGamesGoalsGet(b, b.team.clid, (int)PlayerValue.SHOTS);
 
             if(goals1 != goals2)
             {
@@ -400,15 +400,15 @@ public class Player
             {
                 switch (type)
                 {
-                    case (int)PlayerValue.PLAYER_VALUE_GAMES:
+                    case (int)PlayerValue.GAMES:
                         returnValue = item.games;
                         break;
 
-                    case (int)PlayerValue.PLAYER_VALUE_GOALS:
+                    case (int)PlayerValue.GOALS:
                         returnValue = item.goals;
                         break;
 
-                    case (int)PlayerValue.PLAYER_VALUE_SHOTS:
+                    case (int)PlayerValue.SHOTS:
                         returnValue = item.shots;
                         break;
 
@@ -422,7 +422,7 @@ public class Player
         return returnValue;
     }
 
-    void PlayerGamesGoalsSet(Player pl, int clid, int type, int value)
+    public void PlayerGamesGoalsSet(Player pl, int clid, int type, int value)
     {
         int games_goals_value = 0;
         PlayerGamesGoals newPlayerGamesGoals = new PlayerGamesGoals();
@@ -431,11 +431,11 @@ public class Player
         {
             if (pl.gamesGoals[i].clid == clid)
             {
-                if (type == (int)PlayerValue.PLAYER_VALUE_GAMES)
+                if (type == (int)PlayerValue.GAMES)
                     games_goals_value = pl.gamesGoals[i].games + value;
-                else if (type == (int)PlayerValue.PLAYER_VALUE_GOALS)
+                else if (type == (int)PlayerValue.GOALS)
                     games_goals_value = pl.gamesGoals[i].goals + value;
-                else if (type == (int)PlayerValue.PLAYER_VALUE_SHOTS)
+                else if (type == (int)PlayerValue.SHOTS)
                     games_goals_value = pl.gamesGoals[i].shots + value;
 
                 if (games_goals_value < 0)
@@ -444,11 +444,11 @@ public class Player
                     games_goals_value = 0;
                 }
 
-                if (type == (int)PlayerValue.PLAYER_VALUE_GAMES)
+                if (type == (int)PlayerValue.GAMES)
                     pl.gamesGoals[i].games = games_goals_value;
-                else if (type == (int)PlayerValue.PLAYER_VALUE_GOALS)
+                else if (type == (int)PlayerValue.GOALS)
                     pl.gamesGoals[i].goals = games_goals_value;
-                else if (type == (int)PlayerValue.PLAYER_VALUE_SHOTS)
+                else if (type == (int)PlayerValue.SHOTS)
                     pl.gamesGoals[i].shots = games_goals_value;
 
                 return;
@@ -490,7 +490,7 @@ public class Player
         {
             return 1;
         }
-        else if (position != (int)PlayerPos.PLAYER_POS_GOALIE)
+        else if (position != (int)PlayerPos.GOALIE)
         {
             if (good_structure1 && good_structure2)
             {
@@ -518,7 +518,7 @@ public class Player
     public bool PlayerSubstitutionGoodStructure(int oldStructure, int oldPos, int playerPos)
     {
         int[] acceptedStructures = { 532, 442, 352, 433, 343 };
-        int newPos = oldStructure - (int)Math.Round(Math.Pow(10, (int)PlayerPos.PLAYER_POS_FORWARD - oldPos)) + (int)Math.Round(Math.Pow(10, (int)PlayerPos.PLAYER_POS_FORWARD - playerPos));
+        int newPos = oldStructure - (int)Math.Round(Math.Pow(10, (int)PlayerPos.FORWARD - oldPos)) + (int)Math.Round(Math.Pow(10, (int)PlayerPos.FORWARD - playerPos));
 
         return QueryIntegerIsInArray(newPos, acceptedStructures, 5);
     }
@@ -562,7 +562,7 @@ public class Player
     {
         int move = (tm1 == tm2 && playerNumber1 < playerNumber2) ? -1 : 1;
 
-        if (stat0 == (int)Status0Value.STATUS_LIVE_GAME_PAUSE)
+        if (stat0 == (int)Status0Value.LIVE_GAME_PAUSE)
         {
             if ((playerNumber1 < 11 && PlayerIsBanned(PlayerOfIdxTeam(tm1, playerNumber1)) > 0 &&
                 PlayerOfIdxTeam(tm1, playerNumber1).participation) ||
@@ -606,14 +606,14 @@ public class Player
         float cskill_factor;
 
         if (check_health &&
-           (pl.health != (int)PlayerInjury.PLAYER_INJURY_NONE ||
+           (pl.health != (int)PlayerInjury.NONE ||
             PlayerIsBanned(pl) > 0))
             return 0;
 
         if (pl.pos != position)
         {
-            if (position == (int)PlayerPos.PLAYER_POS_GOALIE ||
-               pl.pos == (int)PlayerPos.PLAYER_POS_GOALIE)
+            if (position == (int)PlayerPos.GOALIE ||
+               pl.pos == (int)PlayerPos.GOALIE)
                 cskill_factor = 0.5f;
             else if (Math.Abs(position - pl.pos) == 2)
                 cskill_factor = 0.65f;
@@ -639,8 +639,8 @@ public class Player
         else
             yellowRed = CupFromClid(fix.clid).yellow_red; //TODO:: Ajustar aqui após criar a classe Cup
 
-        yellow = PlayerCardGet(pl, fix.clid, (int)PlayerValue.PLAYER_VALUE_CARD_YELLOW);
-        red = PlayerCardGet(pl, fix.clid, (int)PlayerValue.PLAYER_VALUE_CARD_RED);
+        yellow = PlayerCardGet(pl, fix.clid, (int)PlayerValue.CARD_YELLOW);
+        red = PlayerCardGet(pl, fix.clid, (int)PlayerValue.CARD_RED);
 
         if (red > 0)
             return red;
@@ -659,7 +659,7 @@ public class Player
         {
             if (pl.cards[i].clid == clid)
             {
-                if (card_type == (int)PlayerValue.PLAYER_VALUE_CARD_YELLOW)
+                if (card_type == (int)PlayerValue.CARD_YELLOW)
                     return_value = pl.cards[i].yellow;
                 else
                     return_value = pl.cards[i].red;
@@ -671,7 +671,7 @@ public class Player
         return return_value;
     }
 
-    void PlayerCardSet(Player pl, int clid, int card_type, int value, bool diff)
+    public static void PlayerCardSet(Player pl, int clid, int card_type, int value, bool diff)
     {
         int i;
         int? card_value = null;
@@ -681,9 +681,9 @@ public class Player
         {
             if (pl.cards[i].clid == clid)
             {
-                if (card_type == (int)PlayerValue.PLAYER_VALUE_CARD_YELLOW)
+                if (card_type == (int)PlayerValue.CARD_YELLOW)
                     card_value = pl.cards[i].yellow;
-                else if (card_type == (int)PlayerValue.PLAYER_VALUE_CARD_RED)
+                else if (card_type == (int)PlayerValue.CARD_RED)
                     card_value = pl.cards[i].red;
 
                 if (diff)
@@ -697,9 +697,9 @@ public class Player
                     card_value = 0;
                 }
 
-                if (card_type == (int)PlayerValue.PLAYER_VALUE_CARD_YELLOW)
+                if (card_type == (int)PlayerValue.CARD_YELLOW)
                     pl.cards[i].yellow = card_value.Value;
-                else if (card_type == (int)PlayerValue.PLAYER_VALUE_CARD_RED)
+                else if (card_type == (int)PlayerValue.CARD_RED)
                     pl.cards[i].red = card_value.Value;
 
                 return;
@@ -710,7 +710,9 @@ public class Player
         newCard.yellow = newCard.red = 0;
         pl.cards.Add(newCard);
 
-        PlayerCardSet(pl, clid, card_type, value, diff);
+        Player player = pl;
+
+        PlayerCardSet(player, clid, card_type, value, diff);
     }
 
 
@@ -727,7 +729,7 @@ public class Player
             pl.cskill * boost * streak *
             (float)Math.Pow(pl.fitness, PLAYER_FITNESS_EXPONENT);
     }
-    void PlayerDecreseFitness(Player pl)
+    public void PlayerDecreseFitness(Player pl)
     {
         float goalie_factor = 1 - PLAYER_FITNESS_DECREASE_FACTOR_GOALIE * (pl.curPos == 0 ? 1 : 0);
         float boost_factor = 1 + pl.team.boost * PLAYER_BOOST_FITNESS_EFFECT;
@@ -756,7 +758,7 @@ public class Player
         pl.fitness = Math.Max(0, pl.fitness);
     }
 
-    void PlayerUpdateFitness(Player pl)
+    public void PlayerUpdateFitness(Player pl)
     {
         float variance = Rnd(
         1 - PLAYER_FITNESS_INCREASE_VARIANCE,
@@ -813,5 +815,5 @@ public class Player
 
     public class PlayerListAttribute
     {
-        public bool[] onOff = new bool[(int)PlayerListAttributeValue.PLAYER_LIST_ATTRIBUTE_END];
+        public bool[] onOff = new bool[(int)PlayerListAttributeValue.END];
     }
